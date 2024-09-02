@@ -7,7 +7,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtRolesGuard } from 'src/auth/jwt/jwt-roles.guard';
 import { JwtRole } from 'src/auth/jwt/jwt-role';
 import { HasRoles } from 'src/auth/jwt/has-roles';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
 

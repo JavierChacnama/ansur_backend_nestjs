@@ -6,8 +6,10 @@ import { JwtRolesGuard } from '../auth/jwt/jwt-roles.guard';
 import { MercadoPagoService } from './mercado_pago.service';
 import { CardTokenBody } from '../mercado_pago/models/card_token_body';
 import { PaymentBody } from './models/payment_body';
+import { ApiTags } from '@nestjs/swagger';
 
 
+@ApiTags('mercadopago')
 @Controller('mercadopago')
 export class MercadoPagoController {
 

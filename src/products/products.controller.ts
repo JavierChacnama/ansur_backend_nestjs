@@ -7,7 +7,9 @@ import { JwtRolesGuard } from "src/auth/jwt/jwt-roles.guard";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags('products')
 @Controller('products')
 export class ProductsController {
 
