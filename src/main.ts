@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({forbidUnknownValues: false}));
 
-  // opciones para la documentacion swagger
+  // Configuración para la documentacion swagger
   const config = new DocumentBuilder()
   .setTitle("Ansur backend")
   .setDescription("Descripcion de las APIs")
