@@ -5,12 +5,19 @@ import { Product } from './product.entity';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import asyncForEach = require('../utils/async_foreach');
-import storage = require('../utils/cloud_storage');
+import { ConfigService } from '@nestjs/config';
+import {v2 as cloudinary} from 'cloudinary';
+import { configureCloudinary } from '../cloudinary/cloudinary.config';
 
 @Injectable()
 export class ProductsService {
 
-    constructor(@InjectRepository(Product) private productsRepository: Repository<Product>) {}
+    constructor(@InjectRepository(Product) 
+    private productsRepository: Repository<Product>,
+    private configService: ConfigService,
+) {
+    configureCloudinary(this.configService);
+}
 
     findAll() {
         return this.productsRepository.find();
@@ -42,10 +49,8 @@ export class ProductsService {
         const startForEach = async () => {
             await asyncForEach(files, async (file: Express.Multer.File) => {
               
-                // const cloudStorage = await initializeStorage();
-                // const url = await cloudStorage.uploadFile(file, file.originalname);
-
-                const url = await storage(file, file.originalname);
+                const result = await cloudinary.uploader.upload(file.path);
+                const url = result.secure_url;
 
                 if (url !== undefined && url !== null) {
                     if (uploadedFiles === 0) {
@@ -83,7 +88,8 @@ export class ProductsService {
                 // const cloudStorage = await initializeStorage();
                 // const url = await cloudStorage.uploadFile(file, file.originalname);
 
-                const url = await storage(file, file.originalname);
+                const result = await cloudinary.uploader.upload(file.path);
+                const url = result.secure_url;
 
                 if (url !== undefined && url !== null) {
                     if (uploadedFiles === 0) {

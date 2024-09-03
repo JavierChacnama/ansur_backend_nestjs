@@ -4,16 +4,21 @@ import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import storage = require('../utils/cloud_storage');
+import { ConfigService } from '@nestjs/config';
+import {v2 as cloudinary} from 'cloudinary';
+import { configureCloudinary } from '../cloudinary/cloudinary.config';
 
 
 @Injectable()
 export class UsersService {
 
     constructor(
-        @InjectRepository(User) private usersRepository: Repository<User>,
-        
-    ) {}
+        @InjectRepository(User) 
+        private usersRepository: Repository<User>,
+        private configService: ConfigService,
+    ) {
+        configureCloudinary(this.configService);
+    }
     
     create(user: CreateUserDto) {
         const newUser = this.usersRepository.create(user);
@@ -38,10 +43,10 @@ export class UsersService {
 
     async updateWithImage(file: Express.Multer.File, id: number, user: UpdateUserDto) {
         
-        // const cloudStorage = await initializeStorage();
-        // const url = await cloudStorage.uploadFile(file, file.originalname);
         
-        const url = await storage(file, file.originalname);
+        
+        const result = await cloudinary.uploader.upload(file.path);
+        const url = result.secure_url;
 
         console.log('URL: ' + url);
         //console.log('UserURL: ', user);
@@ -59,5 +64,13 @@ export class UsersService {
         const updatedUser = Object.assign(userFound, user);
         return this.usersRepository.save(updatedUser);
     }
-    
+
+    async remove(id: number)  {
+        const userFound = await this.usersRepository.findOneBy({ id: id });
+        if (!userFound) {
+            throw new HttpException("Producto no encontrado", HttpStatus.NOT_FOUND);
+        }
+        return this.usersRepository.softDelete(id);
+    }
+
 }

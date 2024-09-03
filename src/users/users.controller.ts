@@ -1,4 +1,4 @@
-import { Body, Controller, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, ParseIntPipe, Post, Put, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, ParseIntPipe, Post, Put, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
@@ -8,17 +8,18 @@ import { JwtRolesGuard } from 'src/auth/jwt/jwt-roles.guard';
 import { JwtRole } from 'src/auth/jwt/jwt-role';
 import { HasRoles } from 'src/auth/jwt/has-roles';
 import { ApiTags } from '@nestjs/swagger';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import {v2 as cloudinary} from 'cloudinary';
+
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+})
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
 
     constructor(private usersService: UsersService) {}
-
-    // GET -> OBTENER
-    // POST -> CREAR
-    // PUT ' PATCH -> ACTUALIZAR
-    // DELETE ' => BORRAR
     
     @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
     @UseGuards(JwtAuthGuard, JwtRolesGuard)
@@ -42,9 +43,8 @@ export class UsersController {
 
     @HasRoles(JwtRole.CLIENT)
     @UseGuards(JwtAuthGuard, JwtRolesGuard)
-    @UseGuards(JwtAuthGuard)
     @Post('upload/:id')
-    @UseInterceptors(FileInterceptor('file'))
+    @UseInterceptors(FileInterceptor('file', {storage}))
     updateWithImage(
         @UploadedFile(
             new ParseFilePipe({
@@ -58,5 +58,14 @@ export class UsersController {
         @Body() user: UpdateUserDto
     ) {
         return this.usersService.updateWithImage(file, id, user);
+    }
+
+    @HasRoles(JwtRole.ADMIN)
+    @UseGuards(JwtAuthGuard, JwtRolesGuard)
+    @Delete(':id') // http:localhost:3000/categories -> PUT
+    remove(
+        @Param('id', ParseIntPipe) id: number,
+    ) {
+        return this.usersService.remove(id);
     }
 }

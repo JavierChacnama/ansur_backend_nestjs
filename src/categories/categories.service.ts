@@ -1,37 +1,37 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import storage = require('../utils/cloud_storage');
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './category.entity';
 import { Repository } from 'typeorm';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { ConfigService } from '@nestjs/config';
 import {v2 as cloudinary} from 'cloudinary';
+import { configureCloudinary } from '../cloudinary/cloudinary.config';
 
 
 @Injectable()
 export class CategoriesService {
 
     constructor(
-        @InjectRepository(Category) private categoriesRepository: Repository<Category>,
-    ) {}
+        @InjectRepository(Category) 
+        private categoriesRepository: Repository<Category>,
+        private configService: ConfigService,
+    ) {
+        configureCloudinary(this.configService);
+    }
 
     findAll() {
         return this.categoriesRepository.find()    
     }
 
     async create(file: Express.Multer.File, category: CreateCategoryDto) {
-        // const url = `/uploads/${file.filename}`;
-        // const cloudStorage = await initializeStorage();
-        // const url = await cloudStorage.uploadFile(file, file.originalname);
 
-        const url = await storage(file, file.originalname);
-        
-        if (url === undefined && url === null) {
-            throw new HttpException('La imagen no se pudo guardar', HttpStatus.INTERNAL_SERVER_ERROR);
+        const result = await cloudinary.uploader.upload(file.path);
+        if (!result) {
+          throw new HttpException('La imagen no se pudo guardar', HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        category.image = url;
-        const newCategory = this.categoriesRepository.create(category)
+        category.image = result.secure_url;
+        const newCategory = this.categoriesRepository.create(category);
         return this.categoriesRepository.save(newCategory);
     }
     
@@ -47,13 +47,9 @@ export class CategoriesService {
     }
    
     async updateWithImage(file: Express.Multer.File, id: number, category: UpdateCategoryDto) {
-        // const cloudStorage = await initializeStorage();
-        // const url = await cloudStorage.uploadFile(file, file.originalname);
-
-        const url = await storage(file, file.originalname);
-        
-        if (url === undefined && url === null) {
-            throw new HttpException('La imagen no se pudo guardar', HttpStatus.INTERNAL_SERVER_ERROR);
+        const result = await cloudinary.uploader.upload(file.path);
+        if (!result) {
+          throw new HttpException('La imagen no se pudo guardar', HttpStatus.INTERNAL_SERVER_ERROR);
         }
         
         const categoryFound = await this.categoriesRepository.findOneBy({ id: id });
@@ -62,7 +58,7 @@ export class CategoriesService {
             throw new HttpException('La categoria no existe', HttpStatus.NOT_FOUND);
         }
 
-        category.image = url;
+        category.image = result.secure_url;
         const updatedCategory = Object.assign(categoryFound, category);
         return this.categoriesRepository.save(updatedCategory);
     }

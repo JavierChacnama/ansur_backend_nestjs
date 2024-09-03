@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, ManyToMany, JoinTable, OneToMany, DeleteDateColumn } from 'typeorm';
 import { hash } from 'bcrypt';
 import { Rol } from 'src/roles/rol.entity';
 import { Address } from 'src/address/address.entity';
@@ -37,6 +37,9 @@ export class User {
     
     @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
     updated_at: Date;
+
+    @DeleteDateColumn()
+    deleted_at: Date;
 
     @JoinTable({
         name: 'user_has_roles',

@@ -7,8 +7,13 @@ import { CategoriesService } from './categories.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { diskStorage } from 'multer';
 import { ApiTags } from '@nestjs/swagger';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import {v2 as cloudinary} from 'cloudinary';
+
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+})
 
 @ApiTags('categories')
 @Controller('categories')
@@ -26,19 +31,7 @@ export class CategoriesController {
     @HasRoles(JwtRole.ADMIN)
     @UseGuards(JwtAuthGuard, JwtRolesGuard)
     @Post() // http:localhost:3000/categories -> POST
-    @UseInterceptors(
-        FileInterceptor(
-            'file'
-            // {
-            //     storage: diskStorage({
-            //         destination: './uploads',
-            //         filename: function(req,file,cb){
-            //             cb(null,file.originalname);
-            //         }
-            //     })
-            // }
-        )
-    )
+    @UseInterceptors(FileInterceptor('file', {storage}))
     createWithImage(
         @UploadedFile(
             new ParseFilePipe({
@@ -63,7 +56,7 @@ export class CategoriesController {
     @HasRoles(JwtRole.ADMIN)
     @UseGuards(JwtAuthGuard, JwtRolesGuard)
     @Put('upload/:id') // http:localhost:3000/categories -> PUT
-    @UseInterceptors(FileInterceptor('file'))
+    @UseInterceptors(FileInterceptor('file', {storage}))
     updateWithImage(
         @UploadedFile(
             new ParseFilePipe({

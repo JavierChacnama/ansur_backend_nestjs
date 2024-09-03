@@ -8,6 +8,12 @@ import { FilesInterceptor } from "@nestjs/platform-express";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { ApiTags } from "@nestjs/swagger";
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import {v2 as cloudinary} from 'cloudinary';
+
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+})
 
 @ApiTags('products')
 @Controller('products')
@@ -53,7 +59,7 @@ export class ProductsController {
     @HasRoles(JwtRole.ADMIN)
     @UseGuards(JwtAuthGuard, JwtRolesGuard)
     @Post() // http:localhost:3000/categories -> POST
-    @UseInterceptors(FilesInterceptor('files[]', 2))
+    @UseInterceptors(FilesInterceptor('files[]', 2, {storage}))
     create(
         @UploadedFiles(
             new ParseFilePipe({
@@ -74,7 +80,7 @@ export class ProductsController {
     @HasRoles(JwtRole.ADMIN)
     @UseGuards(JwtAuthGuard, JwtRolesGuard)
     @Put('upload/:id') // http:localhost:3000/categories -> PUT
-    @UseInterceptors(FilesInterceptor('files[]', 2))
+    @UseInterceptors(FilesInterceptor('files[]', 2, {storage}))
     updateWithImage(
         @UploadedFiles(
             new ParseFilePipe({
