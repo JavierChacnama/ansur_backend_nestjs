@@ -41,7 +41,7 @@ export class UsersController {
         return this.usersService.update(id, user);
     }
 
-    @HasRoles(JwtRole.CLIENT)
+    @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
     @UseGuards(JwtAuthGuard, JwtRolesGuard)
     @Post('upload/:id')
     @UseInterceptors(FileInterceptor('file', {storage}))
