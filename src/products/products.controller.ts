@@ -21,8 +21,8 @@ export class ProductsController {
 
     constructor(private productsService: ProductsService) {}
 
-    @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
-    @UseGuards(JwtAuthGuard, JwtRolesGuard)
+    // @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
+    // @UseGuards(JwtAuthGuard, JwtRolesGuard)
     @Get() // http:localhost:3000/categories -> GET
     findAll() {
         return this.productsService.findAll();
@@ -42,8 +42,8 @@ export class ProductsController {
     //     });
     // }
 
-    @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
-    @UseGuards(JwtAuthGuard, JwtRolesGuard)
+    // @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
+    // @UseGuards(JwtAuthGuard, JwtRolesGuard)
     @Get('category/:id_category') // http:localhost:3000/categories -> GET
     findByCategory(@Param('id_category', ParseIntPipe) id_category: number) {
         return this.productsService.findByCategory(id_category);

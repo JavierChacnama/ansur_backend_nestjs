@@ -21,8 +21,8 @@ export class CategoriesController {
 
     constructor(private CategoriesService: CategoriesService) {}
 
-    @HasRoles(JwtRole.CLIENT, JwtRole.ADMIN)
-    @UseGuards(JwtAuthGuard, JwtRolesGuard)
+    // @HasRoles(JwtRole.CLIENT, JwtRole.ADMIN)
+    // @UseGuards(JwtAuthGuard, JwtRolesGuard)
     @Get()
     findAll() {
         return this.CategoriesService.findAll()
