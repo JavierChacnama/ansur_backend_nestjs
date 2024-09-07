@@ -6,20 +6,11 @@ import * as fs from 'fs';
 
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule,{
-    cors: {
-      origin: (origin, callback) => {
-        // Verifica si el origen está permitido
-        const allowedOrigins = ['http://localhost:4200', 'https://otrodominio.com'];
-        if (allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error('No permitido por CORS'));
-        }
-      },
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-      credentials: true,
-    },
+  const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
   });
 
   app.useGlobalPipes(new ValidationPipe({forbidUnknownValues: false}));
