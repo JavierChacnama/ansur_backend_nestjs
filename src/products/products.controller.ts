@@ -44,6 +44,11 @@ export class ProductsController {
 
     // @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
     // @UseGuards(JwtAuthGuard, JwtRolesGuard)
+    @Get(':id') // http:localhost:3000/categories -> GET
+    findById(@Param('id', ParseIntPipe) id: number) {
+        return this.productsService.findById(id);
+    }
+
     @Get('category/:id_category') // http:localhost:3000/categories -> GET
     findByCategory(@Param('id_category', ParseIntPipe) id_category: number) {
         return this.productsService.findByCategory(id_category);
@@ -51,10 +56,10 @@ export class ProductsController {
     
     // @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
     // @UseGuards(JwtAuthGuard, JwtRolesGuard)
-    // @Get('search/:name') // http:localhost:3000/categories -> GET
-    // findByName(@Param('name') name: string) {
-    //     return this.productsService.findByName(name);
-    // }
+    @Get('search/:name') // http:localhost:3000/categories -> GET
+    findByName(@Param('name') name: string) {
+        return this.productsService.findByName(name);
+    }
 
     @HasRoles(JwtRole.ADMIN)
     @UseGuards(JwtAuthGuard, JwtRolesGuard)
