@@ -27,5 +27,4 @@ export class OrdersService {
         const updatedOrder = Object.assign(orderFound, { status: 'DESPACHADO' });
         return this.ordersRepository.save(updatedOrder);
     }
-
 }

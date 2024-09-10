@@ -28,7 +28,7 @@ export class OrdersController {
     
     @HasRoles(JwtRole.ADMIN)
     @UseGuards(JwtAuthGuard, JwtRolesGuard)
-    @Put(':id')
+    @Put('update-dispatched/:id')
     updateStatus(@Param('id', ParseIntPipe) id: number) {
         return this.ordersService.updateStatus(id);
     }

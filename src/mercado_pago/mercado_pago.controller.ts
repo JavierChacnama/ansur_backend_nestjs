@@ -48,5 +48,4 @@ export class MercadoPagoController {
     createPayment(@Body() paymentBody: PaymentBody) {
         return this.mercadoPagoService.createPayment(paymentBody);
     }
-
 }

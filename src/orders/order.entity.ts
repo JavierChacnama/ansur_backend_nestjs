@@ -37,8 +37,8 @@ export class Order {
     @JoinColumn({ referencedColumnName: 'id_order' })
     orderHasProducts: OrderHasProducts[]
     
-    @OneToMany(() => Product, (product) => product.orderHasProducts)
-    @JoinColumn({ referencedColumnName: 'id_order' })
-    products: Product[]
+    // @OneToMany(() => Product, (product) => product.orderHasProducts)
+    // @JoinColumn({ referencedColumnName: 'id_order' })
+    // products: Product[]
 
 }

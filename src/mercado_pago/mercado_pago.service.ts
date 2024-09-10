@@ -2,6 +2,7 @@ import { HttpService } from '@nestjs/axios/dist';
 import { Injectable, HttpException } from '@nestjs/common';
 import { AxiosResponse, AxiosError } from 'axios';
 import { Observable, catchError, map } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 import { MERCADO_PAGO_API } from 'src/config/config';
 import { IdentificationType } from './models/identification_type';
 import { MERCADO_PAGO_HEADERS } from '../config/config';
@@ -61,23 +62,23 @@ export class MercadoPagoService {
         for (const product of paymentBody.order.products) {
             const ohp = new OrderHasProducts();
             ohp.id_order = savedOrder.id;
-            ohp.id_product = product.id;
+            ohp.id_product = product.id_product;
             ohp.quantity = product.quantity;
             await this.ordersHasProductsRepository.save(ohp);
         }
         
         delete paymentBody.order;
 
+        const idempotencyKey = uuidv4();
+
         return this.httpService.post(
             MERCADO_PAGO_API + '/payments',
             paymentBody, 
-            { headers: MERCADO_PAGO_HEADERS }
+            { headers: { ...MERCADO_PAGO_HEADERS, 'X-Idempotency-Key': idempotencyKey} }
         ).pipe(
             catchError((error: AxiosError) => {
                 throw new HttpException(error.response.data, error.response.status);
             })
         ).pipe(map((resp: AxiosResponse<PaymentResponse>) => resp.data));
     }
-
-
 }

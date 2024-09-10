@@ -8,7 +8,7 @@ export interface PaymentBody {
     issuer_id:          string;
     payment_method_id:  string;
     payer:              Payer;
-    order: CreateOrderDto
+    order: CreateOrderDto;
 }
 
 export interface Payer {

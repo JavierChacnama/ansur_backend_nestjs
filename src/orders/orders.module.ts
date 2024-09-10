@@ -9,7 +9,7 @@ import { Address } from '../address/address.entity';
 import { Product } from '../products/product.entity';
 
 @Module({
-  imports: [ TypeOrmModule.forFeature([ Order, OrderHasProducts, User, Address, Product ]) ],
+  imports: [ TypeOrmModule.forFeature([ Order, OrderHasProducts, User, Address, Product]) ],
   providers: [OrdersService],
   controllers: [OrdersController]
 })
