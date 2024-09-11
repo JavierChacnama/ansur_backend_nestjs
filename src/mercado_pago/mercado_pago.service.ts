@@ -62,7 +62,7 @@ export class MercadoPagoService {
         for (const product of paymentBody.order.products) {
             const ohp = new OrderHasProducts();
             ohp.id_order = savedOrder.id;
-            ohp.id_product = product.id_product;
+            ohp.id_product = product.id;
             ohp.quantity = product.quantity;
             await this.ordersHasProductsRepository.save(ohp);
         }
