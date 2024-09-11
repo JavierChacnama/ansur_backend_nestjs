@@ -16,6 +16,9 @@ export class Order {
     @Column()
     id_address: number;
 
+    @Column({ nullable: true })
+    amount: number;
+
     @Column({default: 'PAGADO'})
     status: string;
 
